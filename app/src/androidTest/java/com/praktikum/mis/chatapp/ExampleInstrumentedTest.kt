@@ -1,4 +1,4 @@
-package com.praktikum.mis.mis_chatapp
+package com.praktikum.mis.chatapp
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("com.praktikum.mis.mis_chatapp", appContext.packageName)
+        assertEquals("com.praktikum.mis.chatapp", appContext.packageName)
     }
 }

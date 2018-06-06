@@ -1,4 +1,4 @@
-package com.praktikum.mis.mis_chatapp
+package com.praktikum.mis.chatapp
 
 import org.junit.Test
 

@@ -19,6 +19,19 @@ import android.view.View
 import android.widget.*
 import kotlinx.android.synthetic.main.content_main.*
 import java.net.InetAddress
+import java.net.ServerSocket
+import java.net.Socket
+import java.net.InetSocketAddress
+import android.R.attr.fragment
+import android.system.Os.accept
+import org.json.JSONObject
+import java.io.DataInputStream
+//import com.sun.xml.internal.ws.streaming.XMLStreamWriterUtil.getOutputStream
+import java.io.DataOutputStream
+import java.io.DataInputStream.readUTF
+import java.util.*
+import kotlin.collections.HashMap
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -41,11 +54,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     var deviceNameArray : Array<String?>? = null
     var deviceArray : Array<WifiP2pDevice?>? = null
 
+    var chatTarget:String? = null
+    var output:DataOutputStream? = null
+    var messages: LinkedList<Message>? = null
+    var socketDictionary: HashMap<String,Socket>? = null
+    val mServerSocket = ServerSocket(12345)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+
+        messages = LinkedList()
+        socketDictionary = HashMap()
         initialWork()
         extListener()
 
@@ -73,11 +95,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         btnDiscover?.setOnClickListener{
             mManager?.discoverPeers(mChannel, object  : WifiP2pManager.ActionListener{
                 override fun onFailure(reason: Int) {
-                    connectionStatus?.text="Discovery Started"
+                    connectionStatus?.text="Discovery Starting Failure"
                 }
 
                 override fun onSuccess() {
-                    connectionStatus?.text="Discovery starting Failure"
+                    connectionStatus?.text="Discovery Started"
                 }
 
             } )
@@ -89,7 +111,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     val device: WifiP2pDevice? = (deviceArray as Array)[position]
                     val config : WifiP2pConfig = WifiP2pConfig()
                     config.deviceAddress=device?.deviceAddress
-
+                    chatTarget = config.deviceAddress
                     mManager?.connect(mChannel,config, object : WifiP2pManager.ActionListener{
                         override fun onFailure(reason: Int) {
                             Toast.makeText(applicationContext, "Connection failed", Toast.LENGTH_SHORT ).show()
@@ -99,6 +121,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             Toast.makeText(applicationContext, "Connected to " + device?.deviceName, Toast.LENGTH_SHORT ).show()
                         }
                     } )
+                    val fm = fragmentManager
+                    val ft = fm.beginTransaction()
+                    val fragment = ChatFragment()
+                    ft.add(android.R.id.content, fragment, "chatFrag")
+                    ft.addToBackStack("chatFrag")
+                    ft.commit()
                 }
             }
 
@@ -168,11 +196,83 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             if(info?.groupFormed == true && info?.isGroupOwner == true){
                 connectionStatus.text = "Host"
+
+                val mSocket = mServerSocket.accept()
+                val mDataInputStream = DataInputStream(mSocket.getInputStream())
+                val mDataOutputStream = DataOutputStream(mSocket.getOutputStream())
+                val test = JSONObject("{\"control\":true,\"name\":\"" + mReciever?.mName + "\"}")
+                mDataOutputStream.writeUTF(test.toString())
+                mDataOutputStream.flush()
+                try {
+                    while (true) {
+                        val msg = mDataInputStream.readUTF()
+                        val json = JSONObject(msg)
+                        val control = json.getBoolean("control")
+                        val devName = json.getString("name")
+                        if(!control) {
+                            val message = json.getString("message")
+                            messages?.addLast(Message(devName,message,false))
+                        }
+                        else if(control){
+                            if(socketDictionary?.get(devName) == null) {
+                                socketDictionary?.put(devName, mSocket)
+                            }
+                            else{
+                                try {
+                                    mDataOutputStream.close();
+                                    mDataInputStream.close();
+                                    mSocket.close();
+                                } catch (e: Exception) {
+                                    System.out.println("Error closing the socket and streams");
+                                }
+                            }
+                        }
+                    }
+                } catch (ex: Exception) {
+                    // reach end of file
+                }
             }else if(info?.groupFormed == true){
                 connectionStatus.text = "Client"
+
+                val mSocket = Socket()
+                mSocket.bind(null)
+                mSocket.connect(InetSocketAddress(groupOwner, 12345), 500)
+                val mDataInputStream = DataInputStream(mSocket.getInputStream())
+                val mDataOutputStream = DataOutputStream(mSocket.getOutputStream())
+                val test = JSONObject("{\"control\":true,\"name\":\"" + mReciever?.mName + "\"}")
+                mDataOutputStream.writeUTF(test.toString())
+                mDataOutputStream.flush()
+                try {
+                    while (true) {
+                        val msg = mDataInputStream.readUTF()
+                        val json = JSONObject(msg)
+                        val control = json.getBoolean("control")
+                        val devName = json.getString("name")
+                        if(!control) {
+                            val message = json.getString("message")
+                            messages?.addLast(Message(devName,message,false))
+                        }
+                        else if(control){
+                            val devName = json.getString("name")
+                            if(socketDictionary?.get(devName) == null) {
+                                socketDictionary?.put(devName, mSocket)
+                            }
+                            else{
+                                try {
+                                    mDataOutputStream.close();
+                                    mDataInputStream.close();
+                                    mSocket.close();
+                                } catch (e: Exception) {
+                                    System.out.println("Error closing the socket and streams");
+                                }
+                            }
+                        }
+                    }
+                } catch (ex: Exception) {
+                    // reach end of file
+                }
             }
         }
-
     }
 
     override fun onResume(){
@@ -203,6 +303,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        //val ft = fragmentManager.beginTransaction()
+        //val newFragment = ChatFragment()
+        //ft.add(android.R.id.content, newFragment)
+        //ft.add(R.layout.chat_fragment, newFragment)
+        val fm = fragmentManager
+        val ft = fm.beginTransaction()
+        val fragment = ChatFragment()
+        ft.add(android.R.id.content, fragment, "chatFrag")
+        ft.addToBackStack("chatFrag")
+        ft.commit()
         when (item.itemId) {
             R.id.action_settings -> return true
             else -> return super.onOptionsItemSelected(item)

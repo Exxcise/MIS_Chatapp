@@ -6,15 +6,22 @@ import android.content.Intent
 import android.net.NetworkInfo
 import android.net.wifi.p2p.WifiP2pManager
 import android.widget.Toast
+import android.net.wifi.p2p.WifiP2pDevice
+
+
 
 class WifiDirectBroadcastReciever(mManager : WifiP2pManager, mChannel : WifiP2pManager.Channel, mActivity : MainActivity) : BroadcastReceiver() {
 
     val mManager : WifiP2pManager? = mManager
     val mChannel : WifiP2pManager.Channel? = mChannel
     val mActivity : MainActivity? = mActivity
+    var mName:String? = null
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val action : String? = intent?.action
+
+        val device:WifiP2pDevice? = intent?.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE)
+        mName = device?.deviceName
 
         when (action){
             WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION -> {

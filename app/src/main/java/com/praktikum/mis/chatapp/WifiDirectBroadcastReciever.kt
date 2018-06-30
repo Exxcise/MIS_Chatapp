@@ -16,12 +16,14 @@ class WifiDirectBroadcastReciever(mManager : WifiP2pManager, mChannel : WifiP2pM
     val mChannel : WifiP2pManager.Channel? = mChannel
     val mActivity : MainActivity? = mActivity
     var mName:String? = null
+    var mAddr:String? = null
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val action : String? = intent?.action
 
         val device:WifiP2pDevice? = intent?.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE)
         mName = device?.deviceName
+        mAddr = device?.deviceAddress
 
         when (action){
             WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION -> {

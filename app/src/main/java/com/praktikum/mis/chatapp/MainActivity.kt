@@ -23,6 +23,7 @@ import java.net.ServerSocket
 import java.net.Socket
 import java.net.InetSocketAddress
 import android.R.attr.fragment
+import android.app.Fragment
 import android.system.Os.accept
 import org.json.JSONObject
 import java.io.DataInputStream
@@ -54,11 +55,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     var deviceNameArray : Array<String?>? = null
     var deviceArray : Array<WifiP2pDevice?>? = null
 
-    var chatTarget:String? = null
-    var output:DataOutputStream? = null
+    var chatTarget:LinkedList<String> = LinkedList()
     var messages: LinkedList<Message>? = null
     var socketDictionary: HashMap<String,Socket>? = null
     val mServerSocket = ServerSocket(12345)
+    var antwort = false
+    var chat_fragment:ChatFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,7 +113,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     val device: WifiP2pDevice? = (deviceArray as Array)[position]
                     val config : WifiP2pConfig = WifiP2pConfig()
                     config.deviceAddress=device?.deviceAddress
-                    chatTarget = config.deviceAddress
+                    chatTarget.push(config.deviceAddress)
                     mManager?.connect(mChannel,config, object : WifiP2pManager.ActionListener{
                         override fun onFailure(reason: Int) {
                             Toast.makeText(applicationContext, "Connection failed", Toast.LENGTH_SHORT ).show()
@@ -123,8 +125,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     } )
                     val fm = fragmentManager
                     val ft = fm.beginTransaction()
-                    val fragment = ChatFragment()
-                    ft.add(android.R.id.content, fragment, "chatFrag")
+                    chat_fragment = ChatFragment()
+                    ft.add(android.R.id.content, chat_fragment, "chatFrag")
                     ft.addToBackStack("chatFrag")
                     ft.commit()
                 }
@@ -200,7 +202,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val mSocket = mServerSocket.accept()
                 val mDataInputStream = DataInputStream(mSocket.getInputStream())
                 val mDataOutputStream = DataOutputStream(mSocket.getOutputStream())
-                val test = JSONObject("{\"control\":true,\"name\":\"" + mReciever?.mName + "\"}")
+                val test = JSONObject("{\"control\":true,answer:" + antwort + ",\"name\":\"" + mReciever?.mAddr + "\"}")
                 mDataOutputStream.writeUTF(test.toString())
                 mDataOutputStream.flush()
                 try {
@@ -209,9 +211,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         val json = JSONObject(msg)
                         val control = json.getBoolean("control")
                         val devName = json.getString("name")
+                        val aw = json.getBoolean("answer")
                         if(!control) {
                             val message = json.getString("message")
-                            messages?.addLast(Message(devName,message,false))
+                            messages?.addLast(Message(devName,message,false, aw))
+                            chat_fragment?.update()
                         }
                         else if(control){
                             if(socketDictionary?.get(devName) == null) {
@@ -239,7 +243,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 mSocket.connect(InetSocketAddress(groupOwner, 12345), 500)
                 val mDataInputStream = DataInputStream(mSocket.getInputStream())
                 val mDataOutputStream = DataOutputStream(mSocket.getOutputStream())
-                val test = JSONObject("{\"control\":true,\"name\":\"" + mReciever?.mName + "\"}")
+                val test = JSONObject("{\"control\":true,answer:" + antwort + ",\"name\":\"" + mReciever?.mAddr + "\"}")
                 mDataOutputStream.writeUTF(test.toString())
                 mDataOutputStream.flush()
                 try {
@@ -248,9 +252,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         val json = JSONObject(msg)
                         val control = json.getBoolean("control")
                         val devName = json.getString("name")
+                        val aw = json.getBoolean("answer")
                         if(!control) {
                             val message = json.getString("message")
-                            messages?.addLast(Message(devName,message,false))
+                            messages?.addLast(Message(devName,message,false, aw))
+                            chat_fragment?.update()
                         }
                         else if(control){
                             val devName = json.getString("name")
@@ -307,12 +313,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //val newFragment = ChatFragment()
         //ft.add(android.R.id.content, newFragment)
         //ft.add(R.layout.chat_fragment, newFragment)
-        val fm = fragmentManager
-        val ft = fm.beginTransaction()
-        val fragment = ChatFragment()
-        ft.add(android.R.id.content, fragment, "chatFrag")
-        ft.addToBackStack("chatFrag")
-        ft.commit()
+        //val fm = fragmentManager
+        //val ft = fm.beginTransaction()
+        //val fragment = ChatFragment()
+        //ft.add(android.R.id.content, fragment, "chatFrag")
+        //ft.addToBackStack("chatFrag")
+        //ft.commit()
         when (item.itemId) {
             R.id.action_settings -> return true
             else -> return super.onOptionsItemSelected(item)

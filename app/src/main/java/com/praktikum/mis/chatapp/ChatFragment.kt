@@ -30,6 +30,7 @@ class ChatFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         listMessages.clear()
+        activity?.chatTarget?.clear()
         mView = null
     }
 
@@ -40,17 +41,24 @@ class ChatFragment : Fragment() {
 
         mManager = activity?.mManager
 
-        if(activity?.chatTarget == null){}
-        else if(activity?.socketDictionary?.get(activity?.chatTarget!!) == null)
-            connect()
+        if(activity?.chatTarget != null) {
+            for (k in activity?.chatTarget!!) {
+                if (k == null) {}
+                else if (activity?.socketDictionary?.get(k) == null)
+                    connect(k)
+            }
+        }
+
 
         mView = inflater.inflate(R.layout.chat_f, container, false)
         evtListeners()
         var listViewMessages: ListView? = mView?.findViewById(R.id.list_view_messages)
-        if(activity?.messages!=null) {
+        if(activity?.messages != null && activity?.chatTarget != null) {
             for (i in activity?.messages!!){
-                if(i.fromName==activity?.chatTarget) {
-                    listMessages.addLast(i)
+                for(j in activity?.chatTarget!!){
+                    if(i.fromName.equals(j)) {
+                        listMessages.addLast(i)
+                    }
                 }
             }
         }
@@ -69,38 +77,52 @@ class ChatFragment : Fragment() {
     fun evtListeners(){
         val sendText:EditText? = mView?.findViewById(R.id.inputMsg)
         val btn_send:Button? = mView?.findViewById(R.id.btn_send)
-        btn_send?.setOnClickListener{
-            if(activity?.socketDictionary?.get(activity?.chatTarget) != null && !sendText?.text.toString().equals("")){
-                val sock = activity?.socketDictionary?.get(activity?.chatTarget)
-                val out = DataOutputStream(sock?.getOutputStream())
-                val test = JSONObject("{\"control\":false,\"name\":\"" + activity?.mReciever?.mName + "\"\"message\":\"" + sendText?.text.toString() + "\"}")
-                out.writeUTF(test.toString())
-                out.flush()
-                var m = Message(activity?.chatTarget!!,sendText?.text.toString(),true)
-                activity?.messages?.addLast(m)
-                listMessages.addLast(m)
-                sendText?.setText("")
-            }
-            else{
-                val toast = Toast.makeText(mView?.context, "Connection failure. Could not send message.", Toast.LENGTH_LONG)
-                toast.show()
-            }
-            /*
+        btn_send?.setOnClickListener {
+            if (activity?.chatTarget != null) {
+                for (i in activity?.chatTarget!!){
+                    if (activity?.socketDictionary?.get(i) != null && !sendText?.text.toString().equals("")) {
+                        val sock = activity?.socketDictionary?.get(i)
+                        val out = DataOutputStream(sock?.getOutputStream())
+                        val test = JSONObject("{\"control\":false,answer:" + activity?.antwort + ",\"name\":\"" + activity?.mReciever?.mAddr + "\"\"message\":\"" + sendText?.text.toString() + "\"}")
+                        out.writeUTF(test.toString())
+                        out.flush()
+                        var m = Message(i, sendText?.text.toString(), true, activity?.antwort!!)
+                        activity?.messages?.addLast(m)
+                        listMessages.addLast(m)
+                        sendText?.setText("")
+                    } else {
+                        val toast = Toast.makeText(mView?.context, "Connection failure. Could not send message.", Toast.LENGTH_LONG)
+                        toast.show()
+                    }
+                    /*
             else if(!sendText?.text.toString().equals("")) {
                 var m = Message("", sendText?.text.toString(), true)
                 activity?.messages?.addLast(m)
                 listMessages.addLast(m)
                 sendText?.setText("")
             }*/
+                }
+            }
         }
     }
 
-    fun connect() {
+    fun update(){
+        if(activity?.messages != null && activity?.chatTarget != null) {
+            for (i in activity?.messages!!){
+                for(j in activity?.chatTarget!!){
+                    if(i.fromName.equals(j)) {
+                        listMessages.addLast(i)
+                    }
+                }
+            }
+        }
+    }
+
+    fun connect(k:String) {
         // Picking the first device found on the network.
-        val device = activity?.chatTarget
 
         val config = WifiP2pConfig()
-        config.deviceAddress = device
+        config.deviceAddress = k
         config.wps.setup = WpsInfo.PBC
 
         mManager?.connect(activity?.mChannel, config, object:WifiP2pManager.ActionListener {

@@ -24,7 +24,11 @@ import java.net.Socket
 import java.net.InetSocketAddress
 import android.R.attr.fragment
 import android.app.Fragment
+import android.os.Handler
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.system.Os.accept
+import com.praktikum.mis.chatapp.R.styleable.RecyclerView
 import org.json.JSONObject
 import java.io.DataInputStream
 //import com.sun.xml.internal.ws.streaming.XMLStreamWriterUtil.getOutputStream
@@ -34,7 +38,7 @@ import java.util.*
 import kotlin.collections.HashMap
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity() {
 
     var btnOffOn: Button? = null
     var btnDiscover: Button? = null
@@ -62,9 +66,54 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     var antwort = false
     var chat_fragment:ChatFragment? = null
 
+    var aktGruppe : String =""
+
+    var ka_index : Int = 0
+    var la_index : Int = 0
+    var b_index : Int = 0
+    var ge_index : Int = 0
+    var ff_index : Int = 0
+
+    var kasseArray : Array<WifiP2pDevice?>? = null
+    var lagerArray : Array<WifiP2pDevice?>? = null
+    var buroArray : Array<WifiP2pDevice?>? = null
+    var gemuseArray  : Array<WifiP2pDevice?>? = null
+    var friFleischArray : Array<WifiP2pDevice?>? = null
+
+    var groupList : LinkedList<Chatgroup> = LinkedList<Chatgroup>()
+
+    private lateinit var list1View : ListView
+
+
+
+    //TODO: Testen aller Funktionen.
+
+
+    var timerHandler = Handler()
+
+    var timerRunnable: Runnable = object : Runnable {
+
+        override fun run() {
+
+            mManager?.discoverPeers(mChannel, object  : WifiP2pManager.ActionListener{
+                override fun onFailure(reason: Int) {
+                    Toast.makeText(applicationContext, "Peer Discovery failure", Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onSuccess() {
+                    Toast.makeText(applicationContext, "Peer Discovery started", Toast.LENGTH_SHORT).show()
+                }
+
+            } )
+            timerHandler.postDelayed(this, 10000)
+        }
+    }
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.app_bar_main)
         setSupportActionBar(toolbar)
 
 
@@ -72,13 +121,116 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         socketDictionary = HashMap()
         initialWork()
         extListener()
+        makeGroups()
 
-        val toggle = ActionBarDrawerToggle(
-                this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer_layout.addDrawerListener(toggle)
-        toggle.syncState()
+        list1View = findViewById<ListView>(R.id.groupListView)
 
-        nav_view.setNavigationItemSelectedListener(this)
+        val adapter = GroupListAdapter(this,groupList)
+        list1View!!.adapter = adapter
+
+
+
+        val context = this
+        list1View!!.onItemClickListener = object : AdapterView.OnItemClickListener{
+            override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if(deviceArray != null) {
+                    val groupName = (groupList[position]).groupName
+                    aktGruppe = groupName
+
+                    if(groupName.equals("Kasse"))
+                    {
+                        for (i : Int in 0 .. kasseArray!!.size -1){
+                            if((kasseArray as Array<WifiP2pDevice>).get(i) != null)
+                                chatTarget.push((kasseArray as Array<WifiP2pDevice>).get(i).deviceAddress)
+                        }
+                    }
+
+                    if(groupName.equals("Lager"))
+                    {
+                        for (i : Int in 0 .. lagerArray!!.size -1){
+                            if((lagerArray as Array<WifiP2pDevice>).get(i) != null)
+                                chatTarget.push((lagerArray as Array<WifiP2pDevice>).get(i).deviceAddress)
+                        }
+                    }
+
+                    if(groupName.equals("Buero"))
+                    {
+                        for (i : Int in 0 .. buroArray!!.size -1){
+                            if((buroArray as Array<WifiP2pDevice>).get(i) != null)
+                                chatTarget.push((buroArray as Array<WifiP2pDevice>).get(i).deviceAddress)
+                        }
+                    }
+
+                    if(groupName.equals("Gemuese"))
+                    {
+                        for (i : Int in 0 .. gemuseArray!!.size -1){
+                            if((gemuseArray as Array<WifiP2pDevice>).get(i) != null)
+                                chatTarget.push((gemuseArray as Array<WifiP2pDevice>).get(i).deviceAddress)
+                        }
+                    }
+
+                    if(groupName.equals("Frisch Fleisch"))
+                    {
+                        for (i : Int in 0 .. friFleischArray!!.size -1){
+                            if((friFleischArray as Array<WifiP2pDevice>).get(i) != null)
+                                chatTarget.push((friFleischArray as Array<WifiP2pDevice>).get(i).deviceAddress)
+                        }
+                    }
+
+                    val config: WifiP2pConfig = WifiP2pConfig()
+
+                    //config.deviceAddress = device?.deviceAddress
+
+                    if(!chatTarget.isEmpty()) {
+                        mManager?.connect(mChannel, config, object : WifiP2pManager.ActionListener {
+                            override fun onFailure(reason: Int) {
+                                Toast.makeText(applicationContext, "Connection failed", Toast.LENGTH_SHORT).show()
+                            }
+
+                            override fun onSuccess() {
+                                Toast.makeText(applicationContext, "Connected", Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                    }
+                }
+                    val fm = fragmentManager
+                    val ft = fm.beginTransaction()
+                    chat_fragment = ChatFragment()
+                    ft.add(android.R.id.content, chat_fragment, "chatFrag")
+                    ft.addToBackStack("chatFrag")
+                    ft.commit()
+
+            }
+        }
+
+        timerHandler.postDelayed(timerRunnable, 0);
+
+       //val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+       // drawer_layout.addDrawerListener(toggle)
+       // toggle.syncState()
+
+       // nav_view.setNavigationItemSelectedListener(this)
+    }
+
+    private fun makeGroups(){
+        var group1 : Chatgroup = Chatgroup("Kasse")
+        var group2 : Chatgroup = Chatgroup("Lager")
+        var group3 : Chatgroup = Chatgroup("Buero")
+        var group4 : Chatgroup = Chatgroup("Gemuese")
+        var group5 : Chatgroup = Chatgroup("Frisch Fleisch")
+
+        group1.geraeteOnline = ka_index
+        group2.geraeteOnline = b_index
+        group3.geraeteOnline = la_index
+        group4.geraeteOnline = ge_index
+        group5.geraeteOnline = ff_index
+
+        groupList.add(group1)
+        groupList.add(group2)
+        groupList.add(group3)
+        groupList.add(group4)
+        groupList.add(group5)
+
     }
 
     private fun extListener(){
@@ -109,6 +261,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         listView?.onItemClickListener = object : AdapterView.OnItemClickListener{
             override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                antwort = false;
                 if(deviceArray != null) {
                     val device: WifiP2pDevice? = (deviceArray as Array)[position]
                     val config : WifiP2pConfig = WifiP2pConfig()
@@ -131,7 +284,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     ft.commit()
                 }
             }
-
         }
     }
 
@@ -173,11 +325,54 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 deviceNameArray = arrayOfNulls(peerList.deviceList.size)
                 deviceArray = arrayOfNulls(peerList.deviceList.size)
 
+                kasseArray = arrayOfNulls(peerList.deviceList.size)
+                lagerArray = arrayOfNulls(peerList.deviceList.size)
+                buroArray = arrayOfNulls(peerList.deviceList.size)
+                gemuseArray  = arrayOfNulls(peerList.deviceList.size)
+                friFleischArray = arrayOfNulls(peerList.deviceList.size)
+
+                //Gruppen[Tag]:
+                //Kasse[KA]
+                //Lager[LA]
+                //Buro[B]
+                //Gemuse[GE]
+                //Frischfleisch[FF]
+                //Arrays erstellt und die Devices werden anhand der obigen Tags im Device Namen in das jeweilige Array eingeordnet
+
+
+
                 var index : Int = 0
+                ka_index  = 0
+                la_index  = 0
+                b_index  = 0
+                ge_index  = 0
+                ff_index = 0
 
                 peerList.deviceList.forEach{
                     (deviceNameArray as Array<String?>)[index]= it.deviceName as String
                     (deviceArray as Array<WifiP2pDevice>)[index] = it
+
+                    if(it.deviceName.contains("KA")) {
+                        (kasseArray as Array<WifiP2pDevice>)[ka_index] = it
+                        ka_index++
+                    }
+                    if(it.deviceName.contains("LA")) {
+                        (lagerArray as Array<WifiP2pDevice>)[la_index] = it
+                        la_index++
+                    }
+                    if(it.deviceName.contains("B")) {
+                        (buroArray as Array<WifiP2pDevice>)[b_index] = it
+                        b_index++
+                    }
+                    if(it.deviceName.contains("GE")) {
+                        (gemuseArray as Array<WifiP2pDevice>)[ge_index] = it
+                        ge_index++
+                    }
+                    if(it.deviceName.contains("FF")) {
+                        (friFleischArray as Array<WifiP2pDevice>)[ff_index] = it
+                        ff_index++
+                    }
+
                     index ++
                 }
 
@@ -284,71 +479,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onResume(){
         super.onResume()
         registerReceiver(mReciever, mIntentFilter)
+        timerHandler.postDelayed(timerRunnable, 0);
     }
 
     override fun onPause() {
         super.onPause()
+        timerHandler.removeCallbacks(timerRunnable);
         unregisterReceiver(mReciever)
     }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        //val ft = fragmentManager.beginTransaction()
-        //val newFragment = ChatFragment()
-        //ft.add(android.R.id.content, newFragment)
-        //ft.add(R.layout.chat_fragment, newFragment)
-        //val fm = fragmentManager
-        //val ft = fm.beginTransaction()
-        //val fragment = ChatFragment()
-        //ft.add(android.R.id.content, fragment, "chatFrag")
-        //ft.addToBackStack("chatFrag")
-        //ft.commit()
-        when (item.itemId) {
-            R.id.action_settings -> return true
-            else -> return super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
-        when (item.itemId) {
-            R.id.nav_camera -> {
-                // Handle the camera action
-            }
-            R.id.nav_gallery -> {
-
-            }
-            R.id.nav_slideshow -> {
-
-            }
-            R.id.nav_manage -> {
-
-            }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
-            }
-        }
-
-        drawer_layout.closeDrawer(GravityCompat.START)
-        return true
+        super.onBackPressed()
     }
 }

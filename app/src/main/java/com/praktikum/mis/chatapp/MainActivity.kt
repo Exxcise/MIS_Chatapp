@@ -106,6 +106,7 @@ class MainActivity : AppCompatActivity() {
 
             } )
             timerHandler.postDelayed(this, 10000)
+            list1View.invalidateViews();
         }
     }
 

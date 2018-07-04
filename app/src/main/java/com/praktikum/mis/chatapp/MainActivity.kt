@@ -48,6 +48,8 @@ class MainActivity : AppCompatActivity() {
     var ConnectionStatus: TextView? = null
     var writeMsg: EditText? = null
 
+    var adapterGroupList : GroupListAdapter? = null
+
     var mManager : WifiP2pManager? = null
     var wifimanager: WifiManager? = null
     var mChannel : WifiP2pManager.Channel? = null
@@ -106,7 +108,7 @@ class MainActivity : AppCompatActivity() {
 
             } )
             timerHandler.postDelayed(this, 10000)
-            list1View.invalidateViews();
+
         }
     }
 
@@ -127,6 +129,7 @@ class MainActivity : AppCompatActivity() {
         list1View = findViewById<ListView>(R.id.groupListView)
 
         val adapter = GroupListAdapter(this,groupList)
+        adapterGroupList = adapter
         list1View!!.adapter = adapter
 
 
@@ -183,15 +186,15 @@ class MainActivity : AppCompatActivity() {
                     //config.deviceAddress = device?.deviceAddress
 
                     if(!chatTarget.isEmpty()) {
-                        mManager?.connect(mChannel, config, object : WifiP2pManager.ActionListener {
-                            override fun onFailure(reason: Int) {
-                                Toast.makeText(applicationContext, "Connection failed", Toast.LENGTH_SHORT).show()
-                            }
+                        //mManager?.connect(mChannel, config, object : WifiP2pManager.ActionListener {
+                         //   override fun onFailure(reason: Int) {
+                         //       Toast.makeText(applicationContext, "Connection failed", Toast.LENGTH_SHORT).show()
+                         //   }
 
-                            override fun onSuccess() {
-                                Toast.makeText(applicationContext, "Connected", Toast.LENGTH_SHORT).show()
-                            }
-                        })
+                          //  override fun onSuccess() {
+                          //      Toast.makeText(applicationContext, "Connected", Toast.LENGTH_SHORT).show()
+                          //  }
+                       // })
                     }
                 }
                     val fm = fragmentManager
@@ -379,6 +382,14 @@ class MainActivity : AppCompatActivity() {
 
                 var adapter : ArrayAdapter<String> = ArrayAdapter<String>(applicationContext, android.R.layout.simple_expandable_list_item_1,deviceNameArray)
                 listView?.adapter = adapter
+
+                groupList.get(0).geraeteOnline = ka_index
+                groupList.get(1).geraeteOnline = b_index
+                groupList.get(2).geraeteOnline = la_index
+                groupList.get(3).geraeteOnline = ge_index
+                groupList.get(4).geraeteOnline = ff_index
+
+                adapterGroupList?.notifyDataSetChanged()
 
                 if((peers as ArrayList).size == 0){
                     Toast.makeText(applicationContext,"No Device Found", Toast.LENGTH_SHORT).show()

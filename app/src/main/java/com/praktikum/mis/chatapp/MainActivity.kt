@@ -404,46 +404,7 @@ class MainActivity : AppCompatActivity() {
             if(info?.groupFormed == true && info?.isGroupOwner == false){
 
             }else if(info?.groupFormed == true){
-
-                val mSocket = Socket()
-                mSocket.bind(null)
-                mSocket.connect(InetSocketAddress(groupOwner, 12345), 500)
-                val mDataInputStream = DataInputStream(mSocket.getInputStream())
-                val mDataOutputStream = DataOutputStream(mSocket.getOutputStream())
-                val test = JSONObject("{\"control\":true,answer:" + antwort + ",\"name\":\"" + mReciever?.mAddr + "\"}")
-                mDataOutputStream.writeUTF(test.toString())
-                mDataOutputStream.flush()
-                try {
-                    while (true) {
-                        val msg = mDataInputStream.readUTF()
-                        val json = JSONObject(msg)
-                        val control = json.getBoolean("control")
-                        val devName = json.getString("name")
-                        val aw = json.getBoolean("answer")
-                        if(!control) {
-                            val message = json.getString("message")
-                            messages?.addLast(Message(devName,message,false, aw))
-                            chat_fragment?.update()
-                        }
-                        else if(control){
-                            val devName = json.getString("name")
-                            if(socketDictionary?.get(devName) == null) {
-                                socketDictionary?.put(devName, mSocket)
-                            }
-                            else{
-                                try {
-                                    mDataOutputStream.close();
-                                    mDataInputStream.close();
-                                    mSocket.close();
-                                } catch (e: Exception) {
-                                    System.out.println("Error closing the socket and streams");
-                                }
-                            }
-                        }
-                    }
-                } catch (ex: Exception) {
-                    // reach end of file
-                }
+                AsyncClient(mActivity!!).execute(info?.groupOwnerAddress.toString())
             }
         }
     }

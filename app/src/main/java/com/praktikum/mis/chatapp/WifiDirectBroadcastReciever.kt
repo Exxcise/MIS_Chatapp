@@ -46,10 +46,10 @@ class WifiDirectBroadcastReciever(mManager : WifiP2pManager, mChannel : WifiP2pM
                 }
 
                 val networkInfo : NetworkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO)
-                if(networkInfo.isConnected){
+                //if(networkInfo.isConnected){
                     mManager.requestConnectionInfo(mChannel, mActivity?.connectionInfoListener)
-                }else{
-                }
+                //}else{
+                //}
 
             }
             WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {}

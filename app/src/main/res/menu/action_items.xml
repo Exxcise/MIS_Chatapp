@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/atn_openChats"
+        android:enabled="true"
+        android:icon="@drawable/ic_message_black_24dp"
+        android:showAsAction="ifRoom|withText"
+        android:title="Offene Chats"
+        android:visible="true"
+        app:showAsAction="always" />
+
+
+</menu>

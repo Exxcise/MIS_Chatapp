@@ -2,20 +2,15 @@ package com.praktikum.mis.chatapp
 
 import android.content.Context
 import android.content.IntentFilter
-import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import android.net.wifi.WifiManager
 import android.net.wifi.p2p.*
-import android.os.Looper
-import android.view.View
 import android.widget.*
 import kotlinx.android.synthetic.main.content_main.*
 import java.net.InetAddress
@@ -23,12 +18,14 @@ import java.net.ServerSocket
 import java.net.Socket
 import java.net.InetSocketAddress
 import android.R.attr.fragment
+import android.app.Activity
 import android.app.Fragment
-import android.os.AsyncTask
-import android.os.Handler
+import android.content.res.Configuration
+import android.os.*
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.system.Os.accept
+import android.view.*
 import com.praktikum.mis.chatapp.R.styleable.RecyclerView
 import org.json.JSONObject
 import java.io.DataInputStream
@@ -115,7 +112,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater : MenuInflater = menuInflater
+        inflater.inflate(R.menu.action_items, menu)
+        return true
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -415,6 +416,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item!!.itemId){
+            R.id.atn_openChats ->{
+                //val fm = fragmentManager
+                //val ft = fm.beginTransaction()
+                //chat_fragment = ChatFragment()
+                //ft.add(android.R.id.content, chat_fragment, "chatFrag")
+                //ft.addToBackStack("chatFrag")
+                //ft.commit()
+                //return true
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onResume(){
         super.onResume()
         registerReceiver(mReciever, mIntentFilter)
@@ -425,6 +442,18 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         timerHandler.removeCallbacks(timerRunnable);
         unregisterReceiver(mReciever)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
+        super.onSaveInstanceState(outState, outPersistentState)
     }
 
     override fun onBackPressed() {

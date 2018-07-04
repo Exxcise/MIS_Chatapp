@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity() {
     var btnSend: Button? = null
     var listView: ListView? = null
     var read_msg_box: TextView? = null
-    var ConnectionStatus: TextView? = null
     var writeMsg: EditText? = null
 
     var adapterGroupList : GroupListAdapter? = null
@@ -253,11 +252,9 @@ class MainActivity : AppCompatActivity() {
         btnDiscover?.setOnClickListener{
             mManager?.discoverPeers(mChannel, object  : WifiP2pManager.ActionListener{
                 override fun onFailure(reason: Int) {
-                    connectionStatus?.text="Discovery Starting Failure"
                 }
 
                 override fun onSuccess() {
-                    connectionStatus?.text="Discovery Started"
                 }
 
             } )
@@ -300,8 +297,6 @@ class MainActivity : AppCompatActivity() {
         listView =findViewById(R.id.peerListView)
 
         read_msg_box = findViewById(R.id.readMsg)
-
-        ConnectionStatus = findViewById(R.id.connectionStatus)
 
         writeMsg = findViewById(R.id.writeMsg)
 
@@ -404,7 +399,6 @@ class MainActivity : AppCompatActivity() {
             val groupOwner : InetAddress? = info?.groupOwnerAddress
 
             if(info?.groupFormed == true && info?.isGroupOwner == true){
-                connectionStatus.text = "Host"
 
                 val mSocket = mServerSocket.accept()
                 val mDataInputStream = DataInputStream(mSocket.getInputStream())
@@ -443,7 +437,6 @@ class MainActivity : AppCompatActivity() {
                     // reach end of file
                 }
             }else if(info?.groupFormed == true){
-                connectionStatus.text = "Client"
 
                 val mSocket = Socket()
                 mSocket.bind(null)

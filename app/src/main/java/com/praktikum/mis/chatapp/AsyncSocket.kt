@@ -12,6 +12,7 @@ class AsyncSocket: AsyncTask<String, Void, String> {
     }
 
     override fun doInBackground(vararg params: String?): String {
+        while(true){
         val mSocket = activity.mServerSocket.accept()
         val mDataInputStream = DataInputStream(mSocket.getInputStream())
         val mDataOutputStream = DataOutputStream(mSocket.getOutputStream())
@@ -49,5 +50,5 @@ class AsyncSocket: AsyncTask<String, Void, String> {
             // reach end of file
         }
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    }}
 }

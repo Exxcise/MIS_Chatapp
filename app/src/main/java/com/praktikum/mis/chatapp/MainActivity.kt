@@ -120,6 +120,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         mActivity = this;
+        AsyncSocket(mActivity!!).execute("")
 
         messages = LinkedList()
         socketDictionary = HashMap()
@@ -400,8 +401,8 @@ class MainActivity : AppCompatActivity() {
         override fun onConnectionInfoAvailable(info: WifiP2pInfo?) {
             val groupOwner : InetAddress? = info?.groupOwnerAddress
 
-            if(info?.groupFormed == true && info?.isGroupOwner == true){
-                AsyncSocket(mActivity!!)
+            if(info?.groupFormed == true && info?.isGroupOwner == false){
+
             }else if(info?.groupFormed == true){
 
                 val mSocket = Socket()

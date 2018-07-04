@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
             } )
-            timerHandler.postDelayed(this, 10000)
+            //timerHandler.postDelayed(this, 10000)
 
         }
     }
@@ -209,7 +209,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        timerHandler.postDelayed(timerRunnable, 0);
+        //timerHandler.postDelayed(timerRunnable, 0);
 
        //val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
        // drawer_layout.addDrawerListener(toggle)

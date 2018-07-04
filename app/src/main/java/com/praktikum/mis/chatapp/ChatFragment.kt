@@ -132,7 +132,6 @@ class ChatFragment : Fragment() {
 
         val config = WifiP2pConfig()
         config.deviceAddress = k
-        config.wps.setup = WpsInfo.PBC
 
         mManager?.connect(activity?.mChannel, config, object:WifiP2pManager.ActionListener {
 
@@ -141,6 +140,23 @@ class ChatFragment : Fragment() {
             }
 
             override fun onFailure(reason: Int) {
+                if(reason == 2){
+                    mManager?.connect(activity?.mChannel, config, object:WifiP2pManager.ActionListener {
+
+                        override fun onSuccess() {
+                            // WiFiDirectBroadcastReceiver notifies us. Ignore for now.
+                        }
+
+                        override fun onFailure(reason: Int) {
+                            if(reason == 2){
+
+                            }
+                            val toast = Toast.makeText(mView?.context, "Connection failed.", Toast.LENGTH_LONG)
+                            toast.show()
+                        }
+                    })
+
+                }
                 val toast = Toast.makeText(mView?.context, "Connection failed.", Toast.LENGTH_LONG)
                 toast.show()
             }

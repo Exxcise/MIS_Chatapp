@@ -178,10 +178,10 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    val config: WifiP2pConfig = WifiP2pConfig()
+                    //val config: WifiP2pConfig = WifiP2pConfig()
 
                     //config.deviceAddress = device?.deviceAddress
-
+/*
                     if(!chatTarget.isEmpty()) {
                         mManager?.connect(mChannel, config, object : WifiP2pManager.ActionListener {
                             override fun onFailure(reason: Int) {
@@ -193,7 +193,7 @@ class MainActivity : AppCompatActivity() {
                             }
                         })
                     }
-                }
+  */              }
                     val fm = fragmentManager
                     val ft = fm.beginTransaction()
                     chat_fragment = ChatFragment()

@@ -62,6 +62,11 @@ class ChatFragment : Fragment() {
                 }
             }
         }
+        if(activity?.chatTarget != null){
+            for(i in activity?.chatTarget!!){
+                connect(i)
+            }
+        }
         var adapter = MsgListAdapter(mView!!.context, listMessages!!)
         listViewMessages?.setAdapter(adapter)
         //listMessages.addLast(Message("asd","asd",true))
@@ -78,7 +83,7 @@ class ChatFragment : Fragment() {
         val sendText:EditText? = mView?.findViewById(R.id.inputMsg)
         val btn_send:Button? = mView?.findViewById(R.id.btn_send)
         btn_send?.setOnClickListener {
-            if (activity?.chatTarget != null) {
+            if (activity?.chatTarget != null && activity?.chatTarget?.size != 0 ) {
                 for (i in activity?.chatTarget!!){
                     if (activity?.socketDictionary?.get(i) != null && !sendText?.text.toString().equals("")) {
                         val sock = activity?.socketDictionary?.get(i)
@@ -102,6 +107,10 @@ class ChatFragment : Fragment() {
                 sendText?.setText("")
             }*/
                 }
+            }
+            else{
+                val toast = Toast.makeText(mView?.context, "Connection failure. Could not send message.", Toast.LENGTH_LONG)
+                toast.show()
             }
         }
     }

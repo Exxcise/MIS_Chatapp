@@ -49,7 +49,6 @@ class WifiDirectBroadcastReciever(mManager : WifiP2pManager, mChannel : WifiP2pM
                 if(networkInfo.isConnected){
                     mManager.requestConnectionInfo(mChannel, mActivity?.connectionInfoListener)
                 }else{
-                    mActivity?.ConnectionStatus?.text = "Device Disconnected"
                 }
 
             }

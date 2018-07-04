@@ -13,6 +13,7 @@ import android.widget.Toast
 import android.net.wifi.WpsInfo
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
+import android.os.Handler
 import android.widget.EditText
 import android.widget.ListView
 import org.json.JSONObject
@@ -26,6 +27,8 @@ class ChatFragment : Fragment() {
     var mManager: WifiP2pManager? = null
     var mView: View? = null
     var listMessages:LinkedList<Message> = LinkedList()
+    var adapter:MsgListAdapter? =null
+    var update_necessary:Boolean = false
 
     override fun onDestroy() {
         super.onDestroy()
@@ -49,6 +52,18 @@ class ChatFragment : Fragment() {
             }
         }
 
+        var timerHandler = Handler()
+        var timerRunnable: Runnable = object : Runnable {
+
+            override fun run() {
+                if(update_necessary)
+                    update()
+                timerHandler.postDelayed(this, 1000)
+
+            }
+        }
+        timerHandler.postDelayed(timerRunnable, 0);
+
 
         mView = inflater.inflate(R.layout.chat_f, container, false)
         evtListeners()
@@ -67,11 +82,11 @@ class ChatFragment : Fragment() {
                 connect(i)
             }
         }
-        var adapter = MsgListAdapter(mView!!.context, listMessages!!)
+        adapter = MsgListAdapter(mView!!.context, listMessages!!)
         listViewMessages?.setAdapter(adapter)
         //listMessages.addLast(Message("asd","asd",true))
         //listMessages.addLast(Message("asd","asd",false))
-        adapter.notifyDataSetChanged()
+        adapter?.notifyDataSetChanged()
         return mView as View
     }
 
@@ -85,17 +100,21 @@ class ChatFragment : Fragment() {
         btn_send?.setOnClickListener {
             if (activity?.chatTarget != null && activity?.chatTarget?.size != 0 ) {
                 for (i in activity?.chatTarget!!){
-                    if (activity?.socketDictionary?.get(i) != null && !sendText?.text.toString().equals("")) {
-                        val sock = activity?.socketDictionary?.get(i)
-                        val out = DataOutputStream(sock?.getOutputStream())
-                        val test = JSONObject("{\"control\":false,answer:" + activity?.antwort + ",\"name\":\"" + activity?.mReciever?.mAddr + "\"\"message\":\"" + sendText?.text.toString() + "\"}")
-                        out.writeUTF(test.toString())
-                        out.flush()
+                    if (activity?.outputDictionary?.get(i) != null && !sendText?.text.toString().equals("")) {
+                        //var sock = activity?.socketDictionary?.get(i)
+                        //var out = DataOutputStream(sock!!.getOutputStream())
+                        var out = activity?.outputDictionary?.get(i)
+                        var test = JSONObject("{\"control\":false,\"answer\":" + activity?.antwort + ",\"name\":\"" + activity?.mReciever?.mAddr + "\",\"message\":\"" + sendText?.text.toString() + "\"}")
+
+                        out?.writeUTF(test.toString())
+                        out?.flush()
                         var m = Message(i, sendText?.text.toString(), true, activity?.antwort!!)
                         activity?.messages?.addLast(m)
                         listMessages.addLast(m)
+                        adapter?.notifyDataSetChanged()
                         sendText?.setText("")
                     } else {
+                        connect(i)
                         val toast = Toast.makeText(mView?.context, "Connection failure. Could not send message.", Toast.LENGTH_LONG)
                         toast.show()
                     }
@@ -119,12 +138,14 @@ class ChatFragment : Fragment() {
         if(activity?.messages != null && activity?.chatTarget != null) {
             for (i in activity?.messages!!){
                 for(j in activity?.chatTarget!!){
-                    if(i.fromName.equals(j)) {
+                    if(i.fromName.equals(j) && !listMessages.contains(i)) {
                         listMessages.addLast(i)
                     }
                 }
             }
         }
+        adapter?.notifyDataSetChanged()
+        update_necessary = false
     }
 
     fun connect(k:String) {
@@ -132,8 +153,10 @@ class ChatFragment : Fragment() {
 
         val config = WifiP2pConfig()
         config.deviceAddress = k
+        config.wps.setup = WpsInfo.PBC
+        config.groupOwnerIntent = 0
 
-        mManager?.connect(activity?.mChannel, config, object:WifiP2pManager.ActionListener {
+        activity?.mManager?.connect(activity?.mChannel, config, object:WifiP2pManager.ActionListener {
 
             override fun onSuccess() {
                 // WiFiDirectBroadcastReceiver notifies us. Ignore for now.

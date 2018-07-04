@@ -24,6 +24,7 @@ import java.net.Socket
 import java.net.InetSocketAddress
 import android.R.attr.fragment
 import android.app.Fragment
+import android.os.AsyncTask
 import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -64,6 +65,8 @@ class MainActivity : AppCompatActivity() {
     var chatTarget:LinkedList<String> = LinkedList()
     var messages: LinkedList<Message>? = null
     var socketDictionary: HashMap<String,Socket>? = null
+    var outputDictionary: HashMap<String,DataOutputStream>? = null
+    var inputDictionary: HashMap<String,DataInputStream>? = null
     val mServerSocket = ServerSocket(12345)
     var antwort = false
     var chat_fragment:ChatFragment? = null
@@ -107,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
             } )
-            //timerHandler.postDelayed(this, 10000)
+            timerHandler.postDelayed(this, 10000)
 
         }
     }
@@ -124,6 +127,8 @@ class MainActivity : AppCompatActivity() {
 
         messages = LinkedList()
         socketDictionary = HashMap()
+        outputDictionary = HashMap()
+        inputDictionary = HashMap()
         initialWork()
         extListener()
         makeGroups()
@@ -209,7 +214,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        //timerHandler.postDelayed(timerRunnable, 0);
+        timerHandler.postDelayed(timerRunnable, 0);
 
        //val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
        // drawer_layout.addDrawerListener(toggle)
@@ -370,7 +375,8 @@ class MainActivity : AppCompatActivity() {
                         (gemuseArray as Array<WifiP2pDevice>)[ge_index] = it
                         ge_index++
                     }
-                    if(it.deviceName.contains("FF")) {
+                    else{
+                    //if(it.deviceName.contains("FF")) {
                         (friFleischArray as Array<WifiP2pDevice>)[ff_index] = it
                         ff_index++
                     }
@@ -401,10 +407,10 @@ class MainActivity : AppCompatActivity() {
         override fun onConnectionInfoAvailable(info: WifiP2pInfo?) {
             val groupOwner : InetAddress? = info?.groupOwnerAddress
 
-            if(info?.groupFormed == true && info?.isGroupOwner == false){
-
+            if(info?.groupFormed == true && info?.isGroupOwner == true){
+                AsyncSocket(mActivity!!).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
             }else if(info?.groupFormed == true){
-                AsyncClient(mActivity!!).execute(info?.groupOwnerAddress.toString())
+                AsyncClient(mActivity!!).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,info?.groupOwnerAddress.toString())
             }
         }
     }

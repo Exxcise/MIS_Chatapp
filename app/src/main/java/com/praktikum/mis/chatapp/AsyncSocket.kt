@@ -12,7 +12,6 @@ class AsyncSocket: AsyncTask<String, Void, String> {
     }
 
     override fun doInBackground(vararg params: String?): String {
-        while(true){
         val mSocket = activity.mServerSocket.accept()
         val mDataInputStream = DataInputStream(mSocket.getInputStream())
         val mDataOutputStream = DataOutputStream(mSocket.getOutputStream())
@@ -34,6 +33,8 @@ class AsyncSocket: AsyncTask<String, Void, String> {
                 else if(control){
                     if(activity.socketDictionary?.get(devName) == null) {
                         activity.socketDictionary?.put(devName, mSocket)
+                        activity.inputDictionary?.put(devName, mDataInputStream)
+                        activity.outputDictionary?.put(devName, mDataOutputStream)
                     }
                     else{
                         try {
@@ -49,6 +50,7 @@ class AsyncSocket: AsyncTask<String, Void, String> {
         } catch (ex: Exception) {
             // reach end of file
         }
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }}
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return ""
+    }
 }

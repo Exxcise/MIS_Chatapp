@@ -13,6 +13,7 @@ import android.widget.Toast
 import android.net.wifi.WpsInfo
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
+import android.os.AsyncTask
 import android.os.Handler
 import android.widget.EditText
 import android.widget.ListView
@@ -106,8 +107,9 @@ class ChatFragment : Fragment() {
                         var out = activity?.outputDictionary?.get(i)
                         var test = JSONObject("{\"control\":false,\"answer\":" + activity?.antwort + ",\"name\":\"" + activity?.mReciever?.mAddr + "\",\"message\":\"" + sendText?.text.toString() + "\"}")
 
-                        out?.writeUTF(test.toString())
-                        out?.flush()
+                        AsyncSend(activity!!).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,i,test.toString())
+                        //out?.writeUTF(test.toString())
+                        //out?.flush()
                         var m = Message(i, sendText?.text.toString(), true, activity?.antwort!!)
                         activity?.messages?.addLast(m)
                         listMessages.addLast(m)
@@ -166,8 +168,12 @@ class ChatFragment : Fragment() {
                 if(reason == 2){
                     connect(k)
                 }
-                val toast = Toast.makeText(mView?.context, "Connection failed.", Toast.LENGTH_LONG)
-                toast.show()
+                try {
+                    val toast = Toast.makeText(mView?.context, "Connection failed.", Toast.LENGTH_LONG)
+                    toast.show()
+                }catch(ex:Exception){
+
+                }
             }
         })
     }

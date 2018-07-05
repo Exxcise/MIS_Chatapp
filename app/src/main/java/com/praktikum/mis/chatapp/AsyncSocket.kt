@@ -49,6 +49,7 @@ class AsyncSocket: AsyncTask<String, Void, String> {
             }
         } catch (ex: Exception) {
             // reach end of file
+            val text = ""
         }
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         return ""

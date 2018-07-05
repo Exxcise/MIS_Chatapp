@@ -111,6 +111,21 @@ class ChatFragment : Fragment() {
                         //out?.writeUTF(test.toString())
                         //out?.flush()
                         var m = Message(i, sendText?.text.toString(), true, activity?.antwort!!)
+                        out?.writeUTF(test.toString())
+                        out?.flush()
+
+                        var fromName : String = ""
+
+                        if(activity != null && activity?.deviceArray != null) {
+                            for (d: WifiP2pDevice? in activity?.deviceArray as Array) {
+                                if(d != null && d.deviceAddress.equals(i)){
+                                    fromName = d.deviceName
+                                }
+                            }
+                        }
+
+                        var m = Message(i, fromName , sendText?.text.toString(), true, activity?.antwort!!)
+
                         activity?.messages?.addLast(m)
                         listMessages.addLast(m)
                         adapter?.notifyDataSetChanged()

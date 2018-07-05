@@ -110,9 +110,9 @@ class ChatFragment : Fragment() {
                         AsyncSend(activity!!).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,i,test.toString())
                         //out?.writeUTF(test.toString())
                         //out?.flush()
-                        var m = Message(i, sendText?.text.toString(), true, activity?.antwort!!)
-                        out?.writeUTF(test.toString())
-                        out?.flush()
+                        //var m = Message(i, sendText?.text.toString(), true, activity?.antwort!!)
+                        //out?.writeUTF(test.toString())
+                        //out?.flush()
 
                         var fromName : String = ""
 

@@ -27,7 +27,7 @@ class AsyncSocket: AsyncTask<String, Void, String> {
                 val aw = json.getBoolean("answer")
                 if(!control) {
                     val message = json.getString("message")
-                    activity.messages?.addLast(Message(devName,message,false, aw))
+                    activity.messages?.addLast(Message(devName,"",message,false, aw))
                     activity.chat_fragment?.update_necessary = true
                 }
                 else if(control){

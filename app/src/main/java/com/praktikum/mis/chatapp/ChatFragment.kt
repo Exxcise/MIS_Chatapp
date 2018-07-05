@@ -83,7 +83,7 @@ class ChatFragment : Fragment() {
                 connect(i)
             }
         }
-        adapter = MsgListAdapter(mView!!.context, listMessages!!)
+        adapter = MsgListAdapter(mView!!.context, listMessages!!, activity!!)
         listViewMessages?.setAdapter(adapter)
         //listMessages.addLast(Message("asd","asd",true))
         //listMessages.addLast(Message("asd","asd",false))

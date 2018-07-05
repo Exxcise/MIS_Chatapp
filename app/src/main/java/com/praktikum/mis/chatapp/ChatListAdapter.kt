@@ -11,7 +11,7 @@ class chatListAdapter : BaseAdapter {
     var mContext : Context? = null
     var dataSet : LinkedList<OpenChat>? = null
 
-    constructor(context: Context, dataSet : LinkedList<OpenChat>){
+    constructor(context: Context, dataSet : LinkedList<OpenChat>, aas:MainActivity){
         this.mContext = context
         this.dataSet = dataSet
     }

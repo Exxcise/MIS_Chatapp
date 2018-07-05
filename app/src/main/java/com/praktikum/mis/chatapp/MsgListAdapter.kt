@@ -15,10 +15,12 @@ class MsgListAdapter : BaseAdapter {
 
 	var mcontext:Context?=null
     var messagesItems: LinkedList<Message>
+	var activity:MainActivity
 
-	constructor (context:Context, navDrawerItems:LinkedList<Message>) {
+	constructor (context:Context, navDrawerItems:LinkedList<Message>, aas:MainActivity) {
 		mcontext = context;
 		messagesItems = navDrawerItems;
+		this.activity = aas
 	}
 
 	override fun getCount():Int {
@@ -52,10 +54,19 @@ class MsgListAdapter : BaseAdapter {
 			// message belongs to other person, load the left aligned layout
 			convertView = mInflater.inflate(R.layout.msg_left,null)
 		}
+		var fromAdr = ""
+		for(i in activity.deviceArray!!) {
+			if (i!!.deviceAddress == m.fromName) {
+				fromAdr = i!!.deviceName
+			}
+		}
+		m.fromAdress = fromAdr
 
 		var lblFrom:TextView = convertView?.findViewById(R.id.lblMsgFrom) as TextView
         var txtMsg:TextView = convertView?.findViewById(R.id.txtMsg) as TextView
 
+		if(!fromName.equals("me"))
+		fromName = fromAdr
 		txtMsg.setText(m.message);
 		lblFrom.setText(fromName);
 

@@ -83,6 +83,7 @@ class MainActivity : AppCompatActivity() {
     var friFleischArray : Array<WifiP2pDevice?>? = null
 
     var groupList : LinkedList<Chatgroup> = LinkedList<Chatgroup>()
+    var chatList : LinkedList<OpenChat> = LinkedList()
 
     private lateinit var list1View : ListView
 
@@ -419,13 +420,13 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when(item!!.itemId){
             R.id.atn_openChats ->{
-                //val fm = fragmentManager
-                //val ft = fm.beginTransaction()
-                //chat_fragment = ChatFragment()
-                //ft.add(android.R.id.content, chat_fragment, "chatFrag")
-                //ft.addToBackStack("chatFrag")
-                //ft.commit()
-                //return true
+                val fm = fragmentManager
+                val ft = fm.beginTransaction()
+                val chatlist = ChatListFragment()
+                ft.add(android.R.id.content, chatlist, "chatList")
+                ft.addToBackStack("chatList")
+                ft.commit()
+                return true
             }
         }
 

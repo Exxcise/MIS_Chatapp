@@ -1,5 +1,6 @@
 package com.praktikum.mis.chatapp
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.content.Context
 import android.content.IntentFilter
 import android.support.design.widget.Snackbar
@@ -33,6 +34,7 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.DataInputStream.readUTF
 import java.util.*
+import java.util.jar.Manifest
 import kotlin.collections.HashMap
 
 
@@ -113,10 +115,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater : MenuInflater = menuInflater
         inflater.inflate(R.menu.action_items, menu)
         return true
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -124,7 +131,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.app_bar_main)
         setSupportActionBar(toolbar)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION),0)
+        }
+
         mActivity = this;
+
         AsyncSocket(mActivity!!).execute("")
 
         messages = LinkedList()

@@ -8,7 +8,11 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import java.util.*
 
-class ChatListAdapter : BaseAdapter {
+
+class chatListAdapter : BaseAdapter {
+    override fun getItemId(position: Int): Long {
+        return position.toLong();
+    }
 
     var mContext : Context? = null
     var dataSet : LinkedList<OpenChat>? = null
@@ -18,9 +22,12 @@ class ChatListAdapter : BaseAdapter {
     constructor(context: Context, dataSet : LinkedList<OpenChat>, aas:MainActivity){
         this.mContext = context
         this.dataSet = dataSet
+        inflater = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+
         // Get view for row item
         val rowView = inflater?.inflate(R.layout.chatlist_item, parent, false)
 
@@ -37,17 +44,14 @@ class ChatListAdapter : BaseAdapter {
         geraete?.text = group.messages!!.size.toString()
 
         return rowView!!;
+
     }
 
     override fun getItem(position: Int): Any {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getItemId(position: Int): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return dataSet!![position]
     }
 
     override fun getCount(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return dataSet!!.size
     }
 }

@@ -8,16 +8,17 @@
     <TextView
         android:id="@+id/groupItem_Name"
         android:layout_width="294dp"
-        android:layout_height="30dp"
-        android:layout_marginLeft="8dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:orientation="vertical"
         android:paddingBottom="5dp"
         android:paddingTop="5dp"
         android:text="Gruppenname"
+        android:textAlignment="viewStart"
         android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@+id/imageView2"
-        tools:layout_editor_absoluteY="8dp" />
+        app:layout_constraintBottom_toTopOf="@+id/lb_GeräteOnle"
+        app:layout_constraintStart_toEndOf="@+id/imageView2" />
 
     <TextView
         android:id="@+id/lb_GeräteOnle"

@@ -1,5 +1,6 @@
 package com.praktikum.mis.chatapp
 
+import android.net.wifi.p2p.WifiP2pDevice
 import android.os.AsyncTask
 import org.json.JSONObject
 import java.io.DataInputStream
@@ -28,6 +29,35 @@ class AsyncSocket: AsyncTask<String, Void, String> {
                 if(!control) {
                     val message = json.getString("message")
                     activity.messages?.addLast(Message(devName,"",message,false, aw))
+
+                    ///NOTIFICATIONS
+                    var dName : String = ""
+                    if(activity != null && activity?.deviceArray != null) {
+                        for (d: WifiP2pDevice? in activity?.deviceArray as Array) {
+                            if(d != null && d.deviceAddress.equals(devName)){
+                                dName = d.deviceName
+                            }
+                        }
+                    }
+
+                    var gruppe : String = ""
+                    if(!dName.isEmpty()){
+                        if(dName.contains("KA"))
+                            gruppe = "Kasse"
+                        if(dName.contains("LA"))
+                            gruppe = "Lager"
+                        if(dName.contains("B"))
+                            gruppe = "Buro"
+                        if(dName.contains("GE"))
+                            gruppe = "Gemuse"
+                        if(dName.contains("FF"))
+                            gruppe = "FrischFleisch"
+                    }
+
+                    val notService : NotificationService = NotificationService(gruppe,msg,activity.applicationContext)
+                    notService.buildNotification()
+                    ////
+
                     activity.chat_fragment?.update_necessary = true
                 }
                 else if(control){

@@ -16,8 +16,10 @@ class AsyncSend: AsyncTask<String, Void, String> {
     override fun doInBackground(vararg params: String?): String {
         var test = params[1]
         var out = activity.outputDictionary?.get(params[0])
-        out?.writeUTF(test)
-        out?.flush()
+        if(activity?.socketDictionary?.get(params[0])!!.isConnected()){
+            out?.writeUTF(test)
+            out?.flush()
+        }
         return ""
     }
 }

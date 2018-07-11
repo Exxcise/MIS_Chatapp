@@ -9,7 +9,7 @@ import android.widget.TextView
 import java.util.*
 
 
-class chatListAdapter : BaseAdapter {
+class ChatListAdapter : BaseAdapter {
     override fun getItemId(position: Int): Long {
         return position.toLong();
     }

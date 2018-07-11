@@ -25,7 +25,7 @@ class NotificationService {
 
         var intent : Intent? = Intent(this.context, MainActivity::class.java)
 
-        var pIntent : PendingIntent = PendingIntent.getActivity(context,System.currentTimeMillis() as Int, intent, 0 )
+        var pIntent : PendingIntent = PendingIntent.getActivity(context,System.currentTimeMillis().toInt(), intent, 0 )
 
         val notify : Notification = Notification.Builder(this.context)
                 .setAutoCancel(true)

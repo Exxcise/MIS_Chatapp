@@ -27,7 +27,7 @@ class ChatListFragment: Fragment(){
 
         mManager = activity?.mManager
 
-        mView = inflater.inflate(R.layout.chat_list, container, false)
+        mView = inflater.inflate(R.layout.app_bar_chatlist, container, false)
 
 
 

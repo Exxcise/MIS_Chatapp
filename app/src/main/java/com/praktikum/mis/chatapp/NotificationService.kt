@@ -25,7 +25,7 @@ class NotificationService {
 
         var intent : Intent? = Intent(this.context, MainActivity::class.java)
         var vibr : LongArray = LongArray(5)
-        var pIntent : PendingIntent = PendingIntent.getActivity(context,System.currentTimeMillis().toInt(), intent, 0 )
+        var pIntent : PendingIntent = PendingIntent.getActivity(this.context,System.currentTimeMillis().toInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         vibr[0] = 1000
         vibr[1] = 1000

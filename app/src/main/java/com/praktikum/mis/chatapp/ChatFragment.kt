@@ -72,7 +72,7 @@ class ChatFragment : Fragment() {
         if(activity?.messages != null && activity?.chatTarget != null) {
             for (i in activity?.messages!!){
                 for(j in activity?.chatTarget!!){
-                    if(i.fromName.equals(j) /*&& i.answer == activity?.isAnswer*/) {
+                    if(i.fromName.equals(j) && i.answer == activity?.isAnswer) {
                         listMessages.addLast(i)
                     }
                 }
@@ -155,7 +155,7 @@ class ChatFragment : Fragment() {
         if(activity?.messages != null && activity?.chatTarget != null) {
             for (i in activity?.messages!!){
                 for(j in activity?.chatTarget!!){
-                    if(i.fromName.equals(j) && !listMessages.contains(i) /* && i.answer == activity?.isAnswer*/) {
+                    if(i.fromName.equals(j) && !listMessages.contains(i) && i.answer == activity?.isAnswer) {
                         listMessages.addLast(i)
                     }
                 }

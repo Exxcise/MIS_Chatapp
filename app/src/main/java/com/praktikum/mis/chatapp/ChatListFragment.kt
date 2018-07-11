@@ -45,6 +45,8 @@ class ChatListFragment: Fragment(){
 
         listView!!.onItemClickListener = object : AdapterView.OnItemClickListener {
             override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                activity?.antwort = true
+                activity?.isAnswer = false
                 val fm = fragmentManager
                 val ft = fm.beginTransaction()
                 var chat_fragment = ChatFragment()

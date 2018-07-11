@@ -9,8 +9,8 @@ class OpenChat{
     var messages : LinkedList<Message>? = null
 
     constructor(messages : LinkedList<Message>){
+        this.messages = messages
         this.deviceAdress = messages.first.fromName
         this.deviceName = messages.first.fromAdress
-        this.messages = messages
     }
 }

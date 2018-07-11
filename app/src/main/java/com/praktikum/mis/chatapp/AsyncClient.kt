@@ -25,9 +25,10 @@ class AsyncClient: AsyncTask<String, Void, String> {
         val mDataInputStream = DataInputStream(mSocket.getInputStream())
         val mDataOutputStream = DataOutputStream(mSocket.getOutputStream())
         val test = JSONObject("{\"control\":true,answer:" + activity.antwort + ",\"name\":\"" + activity.mReciever?.mAddr + "\"}")
-        mDataOutputStream.writeUTF(test.toString())
-        mDataOutputStream.flush()
+
         try {
+            mDataOutputStream.writeUTF(test.toString())
+            mDataOutputStream.flush()
             while (true) {
                 val msg = mDataInputStream.readUTF()
                 val json = JSONObject(msg)

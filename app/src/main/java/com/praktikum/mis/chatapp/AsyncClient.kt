@@ -37,7 +37,6 @@ class AsyncClient: AsyncTask<String, Void, String> {
                 val aw = json.getBoolean("answer")
                 if(!control) {
                     val message = json.getString("message")
-                    activity.messages?.addLast(Message(devName, "",message,false, aw))
 
                     ///NOTIFICATIONS
                     var dName : String = ""
@@ -66,6 +65,7 @@ class AsyncClient: AsyncTask<String, Void, String> {
                     val notService : NotificationService = NotificationService(dName,message,activity.applicationContext)
                     notService.buildNotification()
                     ////
+                    activity.messages?.addLast(Message(devName, "",message,false, aw))
 
                     activity.chat_fragment?.update_necessary = true
                 }

@@ -47,6 +47,8 @@ class MainActivity : AppCompatActivity() {
     var read_msg_box: TextView? = null
     var writeMsg: EditText? = null
 
+    var toolText:String = ""
+
     var adapterGroupList : GroupListAdapter? = null
 
     var mManager : WifiP2pManager? = null
@@ -159,8 +161,8 @@ class MainActivity : AppCompatActivity() {
         val context = this
         list1View!!.onItemClickListener = object : AdapterView.OnItemClickListener{
             override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val groupName = (groupList[position]).groupName
                 if(deviceArray != null) {
-                    val groupName = (groupList[position]).groupName
                     aktGruppe = groupName
 
                     if(groupName.equals("Kasse"))
@@ -195,10 +197,9 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    if(groupName.equals("Frisch Fleisch"))
-                    {
-                        for (i : Int in 0 .. friFleischArray!!.size -1){
-                            if((friFleischArray as Array<WifiP2pDevice>).get(i) != null)
+                    if(groupName.equals("Frisch Fleisch")) {
+                        for (i: Int in 0..friFleischArray!!.size - 1) {
+                            if ((friFleischArray as Array<WifiP2pDevice>).get(i) != null)
                                 chatTarget.push((friFleischArray as Array<WifiP2pDevice>).get(i).deviceAddress)
                         }
                     }
@@ -219,6 +220,7 @@ class MainActivity : AppCompatActivity() {
                        // })
                     }
   */              }
+                toolText = groupName
                 antwort = false
                 isAnswer = true
                     val fm = fragmentManager

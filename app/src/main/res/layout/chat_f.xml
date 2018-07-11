@@ -5,6 +5,23 @@
     android:background="@drawable/tile_bg"
     android:orientation="vertical" >
 
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text=""
+            android:textColor="#fff"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-medium" />
+
+    </android.support.design.widget.AppBarLayout>
+
     <ListView
         android:id="@+id/list_view_messages"
         android:layout_width="fill_parent"

@@ -62,7 +62,7 @@ class AsyncClient: AsyncTask<String, Void, String> {
                             gruppe = "FrischFleisch"
                     }
 
-                    val notService : NotificationService = NotificationService(dName,msg,activity.applicationContext)
+                    val notService : NotificationService = NotificationService(dName,message,activity.applicationContext)
                     notService.buildNotification()
                     ////
 

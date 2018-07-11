@@ -7,16 +7,14 @@ import android.app.Fragment
 import android.net.wifi.p2p.WifiP2pManager
 import android.support.v4.view.GravityCompat
 import android.view.View;
-import android.widget.Button
 import kotlinx.android.synthetic.main.activity_main.*
-import android.widget.Toast
 import android.net.wifi.WpsInfo
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.os.AsyncTask
 import android.os.Handler
-import android.widget.EditText
-import android.widget.ListView
+import android.support.design.widget.AppBarLayout
+import android.widget.*
 import org.json.JSONObject
 import java.io.DataOutputStream
 import java.util.*
@@ -45,6 +43,7 @@ class ChatFragment : Fragment() {
 
         mManager = activity?.mManager
 
+
         if(activity?.chatTarget != null) {
             for (k in activity?.chatTarget!!) {
                 if (k == null) {}
@@ -67,12 +66,15 @@ class ChatFragment : Fragment() {
 
 
         mView = inflater.inflate(R.layout.chat_f, container, false)
+
+        var toolb: TextView? = mView?.findViewById(R.id.toolbar_title)
+        toolb?.setText(activity?.toolText)
         evtListeners()
         var listViewMessages: ListView? = mView?.findViewById(R.id.list_view_messages)
         if(activity?.messages != null && activity?.chatTarget != null) {
             for (i in activity?.messages!!){
                 for(j in activity?.chatTarget!!){
-                    if(i.fromName.equals(j) && i.answer == activity?.isAnswer) {
+                    if(i.fromName.equals(j) && ((i.answer == activity?.isAnswer && !i.isSelf) || (!i.answer == activity?.isAnswer && i.isSelf))) {
                         listMessages.addLast(i)
                     }
                 }
@@ -155,7 +157,7 @@ class ChatFragment : Fragment() {
         if(activity?.messages != null && activity?.chatTarget != null) {
             for (i in activity?.messages!!){
                 for(j in activity?.chatTarget!!){
-                    if(i.fromName.equals(j) && !listMessages.contains(i) && i.answer == activity?.isAnswer) {
+                    if(i.fromName.equals(j) && !listMessages.contains(i) && ((i.answer == activity?.isAnswer && !i.isSelf) || (!i.answer == activity?.isAnswer && i.isSelf))) {
                         listMessages.addLast(i)
                     }
                 }

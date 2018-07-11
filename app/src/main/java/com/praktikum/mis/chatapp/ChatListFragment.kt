@@ -47,6 +47,7 @@ class ChatListFragment: Fragment(){
             override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 activity?.antwort = true
                 activity?.isAnswer = false
+                activity?.toolText = chatList[position].deviceName!!
                 val fm = fragmentManager
                 val ft = fm.beginTransaction()
                 var chat_fragment = ChatFragment()

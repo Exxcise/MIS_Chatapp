@@ -16,7 +16,7 @@ class AsyncSend: AsyncTask<String, Void, String> {
     override fun doInBackground(vararg params: String?): String {
         var test = params[1]
         var out = activity.outputDictionary?.get(params[0])
-        if(activity?.socketDictionary?.get(params[0])!!.isConnected()){
+        if(activity?.socketDictionary?.get(params[0])!!.isConnected() && !activity?.socketDictionary?.get(params[0])!!.isClosed() && !activity?.socketDictionary?.get(params[0])!!.isOutputShutdown()){
             out?.writeUTF(test)
             out?.flush()
         }

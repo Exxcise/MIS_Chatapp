@@ -72,7 +72,7 @@ class ChatFragment : Fragment() {
         if(activity?.messages != null && activity?.chatTarget != null) {
             for (i in activity?.messages!!){
                 for(j in activity?.chatTarget!!){
-                    if(i.fromName.equals(j)) {
+                    if(i.fromName.equals(j) /*&& i.answer == activity?.isAnswer*/) {
                         listMessages.addLast(i)
                     }
                 }
@@ -145,7 +145,7 @@ class ChatFragment : Fragment() {
                 }
             }
             else{
-                val toast = Toast.makeText(mView?.context, "Connection failure. Could not send message.", Toast.LENGTH_LONG)
+                val toast = Toast.makeText(mView?.context, "No devices found.", Toast.LENGTH_LONG)
                 toast.show()
             }
         }
@@ -155,7 +155,7 @@ class ChatFragment : Fragment() {
         if(activity?.messages != null && activity?.chatTarget != null) {
             for (i in activity?.messages!!){
                 for(j in activity?.chatTarget!!){
-                    if(i.fromName.equals(j) && !listMessages.contains(i)) {
+                    if(i.fromName.equals(j) && !listMessages.contains(i) /* && i.answer == activity?.isAnswer*/) {
                         listMessages.addLast(i)
                     }
                 }

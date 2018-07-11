@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
     var inputDictionary: HashMap<String,DataInputStream>? = null
     val mServerSocket = ServerSocket(12345)
     var antwort = false
+    var isAnswer = false
     var chat_fragment:ChatFragment? = null
 
     var aktGruppe : String =""
@@ -218,6 +219,8 @@ class MainActivity : AppCompatActivity() {
                        // })
                     }
   */              }
+                antwort = false
+                isAnswer = true
                     val fm = fragmentManager
                     val ft = fm.beginTransaction()
                     chat_fragment = ChatFragment()

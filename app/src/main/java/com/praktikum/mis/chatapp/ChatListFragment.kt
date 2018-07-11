@@ -7,6 +7,7 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ListView
 import java.util.*
 
@@ -41,6 +42,20 @@ class ChatListFragment: Fragment(){
 
         var listView: ListView? = mView?.findViewById(R.id.list_view_chats)
         listView?.setAdapter(adapter);
+
+        listView!!.onItemClickListener = object : AdapterView.OnItemClickListener {
+            override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val fm = fragmentManager
+                val ft = fm.beginTransaction()
+                var chat_fragment = ChatFragment()
+                activity?.chatTarget?.clear()
+                activity?.chatTarget?.add(chatList[position].deviceAdress!!)
+                activity?.chat_fragment=chat_fragment
+                ft.add(android.R.id.content, chat_fragment, "chatFrag")
+                ft.addToBackStack("chatFrag")
+                ft.commit()
+            }
+        }
 
         adapter?.notifyDataSetChanged()
         return mView as View

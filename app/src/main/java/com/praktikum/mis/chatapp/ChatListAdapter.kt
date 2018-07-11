@@ -16,6 +16,9 @@ class ChatListAdapter : BaseAdapter {
 
     var mContext : Context? = null
     var dataSet : LinkedList<OpenChat>? = null
+
+    var target: String? = null
+
     private var inflater: LayoutInflater?
             = null
 
@@ -39,7 +42,7 @@ class ChatListAdapter : BaseAdapter {
 
         val group = getItem(position) as OpenChat
 
-
+        target=group.deviceAdress
         groupNameView?.text = group.deviceName
         geraete?.text = group.messages!!.filter { !it.isSelf }.size.toString()
 

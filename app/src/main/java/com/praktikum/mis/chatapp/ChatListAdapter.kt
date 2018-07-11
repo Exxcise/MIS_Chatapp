@@ -44,7 +44,7 @@ class ChatListAdapter : BaseAdapter {
 
         target=group.deviceAdress
         groupNameView?.text = group.deviceName
-        geraete?.text = group.messages!!.filter { !it.isSelf }.size.toString()
+        geraete?.text = group.messages!!.filter { !it.isSelf }.size.toString() + " Nachrichten"
 
         return rowView!!;
 
